@@ -1,0 +1,196 @@
+
+                      body {
+                          margin: 0;
+                          padding: 0;
+                      }
+
+/**ID选择器**/
+#Container {
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: column;/*垂直排列，起点在上沿*/
+    height: 100vh;
+    background-color:#00A0DB ;
+}
+
+#Header {
+    height: 66px;
+    flex: 0 0 auto;
+    background-position:center;
+    background-color:#00A0DB;
+    margin-bottom:20px;
+    justify-content:center;
+}
+.el-header{
+    height: 66px;
+    margin-bottom:20px;
+}
+.el-main{
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    background: url("../images/bk.jpg") no-repeat center;
+    align:middle;
+    padding-bottom: 10%;
+}
+#Content {
+    /*重点掌握*/
+    display: -webkit-flex;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    clear: both;
+    background: url("../images/bk.jpg") no-repeat center;
+}
+#game_ret
+{
+    margin-top: 10px;
+}
+#Footer {
+    height: 130px;
+    padding-top: 15px;
+    background:#00A0DB;
+    font-family:"微软雅黑 Light";
+    font-size:14px;
+    font-weight:bold;
+    color:gray;
+    background-color:#00A0DB;
+    margin-top: 15px;
+}
+.el-footer{
+    text-align: center;
+}
+.el-row{
+    width: 100%;
+}
+.myWords {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+    width: 80%;
+    height: 50%;
+    border: 2px solid #000000;
+    border-radius: 10px;
+    font:bold 30px "Microsoft yahei";
+    margin-top: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-shadow: 1px 1px 1px rgba(0,0,0,.4);
+    box-shadow: 0px 3px 0px rgba(0,0,0,.2);
+
+}
+
+.button
+{
+    width: 30%;
+    height: 15%;
+    background: linear-gradient(to bottom, #4eb5e5 0%,#389ed5 100%);
+    border: none;
+    border-radius: 5px;
+    position: relative;
+    border-bottom: 5px solid #2b8bc6;
+    color: #fbfbfb;
+    text-shadow: 1px 1px 1px rgba(0,0,0,.4);
+    text-align: center;
+    box-shadow: 0px 3px 0px rgba(0,0,0,.2);
+    font:bold 40px "Microsoft yahei";
+    cursor: pointer;
+    margin-left: 2.5%;
+    margin-right: 2.5%;
+}
+.button:hover
+{
+    background: linear-gradient(to bottom, #33FFFF 0%,#c6e2ff 100%);
+    border-bottom: 5px solid #c6e2ff;
+     !important;
+}
+
+.main{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.garbageTable{
+    border-style:groove;
+    border-style:inset;
+    border-style:outset;
+    border-width:medium;
+    border-radius:12px;
+    box-shadow: 7px 7px 17px rgba(52, 56, 66, 0.5);
+    background-color: rgba(255,255,255,0.9);
+    justify-content: center;
+    align-content: center;
+}
+
+
+.interact_garbage
+{
+    display: flex;
+    flex-direction: row;
+    bottom: 0;
+}
+.interact_judge_width
+{
+    width: 25%;
+}
+.interact_image_width
+{
+    width: 25%;
+}
+
+.garbage_judge
+{
+    height: 100px;
+    display: flex;
+    flex-direction: row;
+}
+.image_mouseenter_1
+{
+    cursor: pointer;
+}
+.image_mouseenter_2
+{
+
+}
+.select_button
+{
+    margin-top: 2.5%;
+}
+.garbageTable_header
+{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    height: 20%;
+    padding-top: 2.5%;
+}
+.title_name
+{
+    font:bold 30px "Microsoft yahei";
+    color: #FF6633;
+}
+.loading_gift{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.login_bar{
+    padding-top:15px;
+}
+.loading_true{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.loading_False{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.progress_bar{
+    margin-top: 15px;
+    margin-bottom: 10px;
+}

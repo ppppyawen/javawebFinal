@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>问卷答题</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" type="text/css" href="../../plugin/element.css">
+</head>
+<style>
+    *{
+        padding: 0;
+        margin: 0;
+    }
+    html,body{
+        width: 100%;
+        height: 100%;
+    }
+    #questionnaire{
+        height: 100%;
+    }
+    .el-container{
+        width: 100%;
+        top: 0px;
+        left: 0;
+        bottom: 0
+    }
+    .el-header{
+        color:#333;
+        line-height: 60px;
+    }
+    .el-aside{
+        color:#333;
+        line-height: 200px;
+    }
+    .el-main{
+        color: #333;
+        text-align: center;
+    }
+    .el-header .el-menu{
+        border-bottom: none;
+    }
+    .el-aside .el-main{
+        padding-top: 60px;
+    }
+    .el-aside .el-menu{
+        border-right: none;
+    }
+    .color-red{
+        color: red !important;
+    }
+    .color-green{
+        color:green !important;
+    }
+    /**************** 修改或增加的css *****************/
+    .el-main{
+        text-align: left;
+    }
+    .sub-nav{
+        width: 300px;
+        height: 100%;
+        background-image: linear-gradient(to top, #accbee 0%, #e7f0fd 100%);
+    }
+    .head{
+        height: 50px;
+        display: flex;
+        align-items: center;
+        color: white;
+        margin-bottom: 0px;
+        background: rgba(52,152,219,0.8);
+    }
+    .el-page-header__content{
+        color: white;
+    }
+
+    .el-menu{
+        background-color: rgba(255,255,255,0);
+    }
+</style>
+<body>
+<el-container id="questionnaire">
+    <el-header class="head">
+        <el-page-header @back="goBack" content="问卷答题界面">
+        </el-page-header>
+    </el-header>
+    <el-container>
+        <el-aside>
+            <div class="sub-nav">
+                <el-menu
+                        default-active="2-2"
+                        class="el-menu-vertical-demo"
+                        @open="handleOpen"
+                        @close="handleClose">
+                    <el-menu-item index="1">
+                        <i class="el-icon-data-analysis"></i>
+                        <el-button type="text" @click="goToWelcome()">数据统计</el-button>
+                    </el-menu-item>
+                    <el-submenu index="2">
+                        <template slot="title">
+                            <i class="el-icon-s-order"></i>
+                            <span>答题模块</span>
+                        </template>
+                        <el-menu-item-group>
+                            <el-menu-item index="2-1">
+                                <i class="el-icon-tickets"></i>
+                                <el-button type="text" @click="goToQuestion()">用户答题</el-button>
+                            </el-menu-item>
+                            <el-menu-item index="2-2">
+                                <i class="el-icon-document"></i>
+                                <el-button type="text" @click="goToHistory()">历史答题</el-button>
+                            </el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
+                    <el-menu-item index="3">
+                        <i class="el-icon-medal"></i>
+                        <el-button type="text" @click="goToGame()">用户练习</el-button>
+                    </el-menu-item>
+                    <el-menu-item index="4">
+                        <i class="el-icon-back"></i>
+                        <el-button type="text" @click="goBack()">返回主页</el-button>
+                    </el-menu-item>
+                </el-menu>
+            </div>
+        </el-aside>
+        <el-main>
+            <el-table :data="listTable" v-loading="listLoading" stripe style="width: 100%">
+                <el-table-column
+                        type="index"
+                        style="width: 5%">
+                </el-table-column>
+                <el-table-column label="用户姓名" prop="userName" align="center" style="width: 10%">
+                </el-table-column>
+                <el-table-column label="问卷序列号" prop="examSn" align="center" style="width: 30%">
+                </el-table-column>
+                <el-table-column label="问卷创建时间" prop="createTime" align="center" style="width: 30%">
+                </el-table-column>
+                <el-table-column label="操作" align="center" style="width: 15%">
+                    <template slot-scope="scope">
+                        <el-button size="mini" type="primary"
+                                   @click="handleQuery(scope.$index, scope.row)">查看答题情况
+                        </el-button>
+                        <el-button size="mini" type="info"
+                                   @click="questExport(scope.$index, scope.row)">答题情况导出
+                        </el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--数据表格结束-->
+            <!--数据分页开始-->
+            <el-pagination
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="currentPage"
+                    :page-size="pageSize"
+                    :page-sizes="[5, 10, 20, 50, 100]"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="total">
+            </el-pagination>
+            <!--数据分页结束-->
+            <!--新增编辑开始-->
+            <el-dialog title="答题情况" style="width: 100%" :visible.sync="dlgFormVisible">
+                <el-table :data="ListResultTable" v-loading="listResultLoading" stripe style="width: 100%">
+                    <el-table-column
+                            type="index"
+                            style="width: 5%">
+                    </el-table-column>
+                    <el-table-column label="垃圾名称" prop="garbageName" align="center" style="width: 10%">
+                    </el-table-column>
+                    <el-table-column label="所选答案" prop="answerName" align="center" style="width: 30%">
+                    </el-table-column>
+                    <el-table-column label="正确答案" prop="trueName" align="center" style="width: 30%">
+                    </el-table-column>
+                    <el-table-column label="备注" prop="sortInfo" align="center" style="width: 25%">
+                    </el-table-column>
+                </el-table>
+            </el-dialog>
+        </el-main>
+    </el-container>
+</el-container>
+
+<script type="text/javascript" src="../../plugin/vue.min.js"></script>
+<!-- 引入组件库 -->
+<script type="text/javascript" src="../../plugin/element.js"></script>
+<script type="text/javascript" src="../../plugin/axios.min.js"></script>
+
+<script type="text/javascript">
+    var vm = new Vue({
+        el: '#questionnaire',
+        data: function(){
+            return {
+                //数据表格
+                listTable: [],
+                ListResultTable: [],
+                listLoading: false,
+                listResultLoading:false,
+                currentPage: 1,
+                pageSize: 5,
+                total: 0,
+                dlgFormVisible: false,
+            };
+        },
+
+        mounted: function () {
+            this.getTableData();
+        },
+        methods: {
+            //获取数据表格数据
+            getTableData: function () {
+                this.listLoading = true;
+                let postData = new FormData();
+                postData.append('currentPage', this.currentPage);//当前页数
+                postData.append('pageSize', this.pageSize);//每页显示条目个数
+                const _this = this;
+                axios.post('../../api/quest/query', postData).then(function (response) {
+                    _this.listLoading = false;
+                    _this.listTable = response.data.examTable;
+                    _this.total = response.data.total;
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+
+            //分页PageSize大小改变
+            handleSizeChange: function (size) {
+                this.pageSize = size;
+                this.getTableData();
+            },
+            //分页当前页改变
+            handleCurrentChange: function (currentPage) {
+                this.currentPage = currentPage;
+                this.getTableData();
+            },
+            handleQuery: function (index, row) {
+                 this.dlgFormVisible = true;
+                 this.listResultLoading = true;
+                 let postData = new FormData();
+                 //alert(row.examSn);
+                 postData.append('examSn', row.examSn);
+                 const _this = this;
+                 axios.post('../../api/quest/queryResult', postData).then(function (response) {
+                    _this.listResultLoading = false;
+                    _this.ListResultTable = response.data.examTable;
+                 }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            questExport: function(index,row){
+                let _this = this;
+                let postData = new FormData();
+                postData.append('examSn', row.examSn);
+                axios.post('../../api/data/questExport', postData,{
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded', //请求的数据类型为form data格式
+                    },
+                    'responseType': 'blob'
+
+                }).then(function (response) {
+                      const blob = new Blob([response.data]);
+                      const fileName = 'questResult.xls';
+                      const linkNode = document.createElement('a');
+                      linkNode.download = fileName; //a标签的download属性规定下载文件的名称
+                      linkNode.style.display = 'none';
+                      linkNode.href = URL.createObjectURL(blob); //生成一个Blob URL
+                      document.body.appendChild(linkNode);
+                      linkNode.click();  //模拟在按钮上的一次鼠标单击
+                      URL.revokeObjectURL(linkNode.href); // 释放URL 对象
+                      document.body.removeChild(linkNode);
+                }).catch(function (error) {
+                   console.log(error);
+                });
+            },
+            handleOpen(key, keyPath) {
+                console.log(key, keyPath);
+            },
+            handleClose(key, keyPath) {
+                console.log(key, keyPath);
+            },
+            goBack() {
+                location.href = '../../index.html';
+            },
+            goToHistory() {
+                location.href = 'QuestionHistory.html';
+            },
+            goToQuestion() {
+                location.href = 'Question.html'
+            },
+            goToGame(){
+                location.href = '../garbage.html'
+            },
+            goToWelcome(){
+                location.href = 'QuestionWelcome.html'
+            }
+        }
+    })
+</script>
+</body>
+</html>

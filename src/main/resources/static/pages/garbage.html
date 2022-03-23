@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>垃圾分类</title>
+    <link rel="stylesheet" type="text/css" href="../plugin/garbage.css">
+    <link rel="stylesheet" type="text/css" href="../plugin/element.css">
+
+    <style>
+        .head{
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            margin-bottom: 0px;
+        }
+
+        .el-page-header__content{
+            color: white;
+        }
+
+        .el-footer{
+            background-color: #00A0DB;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body onload="localStorage_text()">
+
+<el-container id="Container">
+    <el-header class="head">
+        <el-row>
+            <el-col :span="6">
+                <el-page-header @back="goBack" content="垃圾分类小游戏">
+                </el-page-header>
+            </el-col>
+            <el-col :span="9" offset="20">
+                <el-button type="primary" plain @click="login()">登录</el-button>
+                <el-button type="warning" plain @click="register()">注册</el-button>
+            </el-col>
+        </el-row>
+    </el-header>
+
+    <div id="Content">
+        <el-row type="flex" justify="center">
+            <el-col :span="14" style="align-items: center">
+                <div id="loading" class="garbageTable" style="display: none">
+                    <div class="login_bar">
+                        <h2 align="center">
+                            正在评分中.....
+                        </h2>
+                    </div>
+                    <hr size="2px" color="#333333"/>
+                    <div class="loading_gift" id="loading_gift">
+                        <img src="../images/loading.gif" width="45%" height="45%"/>
+                    </div>
+                </div>
+
+                <div id="loginTrue" class="garbageTable" style="display: none ">
+                    <div class="login_bar">
+                        <h2 align="center">
+                            游戏结果
+                        </h2>
+                    </div>
+                    <hr size="2px" color="#333333"/>
+                    <div class="loading_true" id="loading_true_gift">
+                        <img src="../images/TureAnswer.png" width="40%" height="40%">
+                    </div>
+                    <div>
+                        <h2 align="center" id="login_true_text">恭喜您！成功通过游戏! 您的正确率为{{game_result}}%</h2>
+                    </div>
+                </div>
+
+                <div id="loginFalse" class="garbageTable" style="display: none">
+                    <div class="login_bar">
+                        <h2 align="center">
+                            游戏结果
+                        </h2>
+                    </div>
+                    <hr size="2px" color="#333333"/>
+                    <div class="loading_False" id="loading_False_gift">
+                        <img src="../images/wrongAnswer.png" width="35%" height="35%">
+                    </div>
+                    <div>
+                        <h2 align="center" id="login_False_text">不好意思！本次游戏失败! 您的正确率{{game_result}}%</h2>
+                    </div>
+                </div>
+
+                <div id="garbage" class="garbageTable" align="center">
+                    <div>
+                <span align="center" class="title_name">
+                    垃圾分类小游戏
+                </span>
+                    </div>
+                    <div class="garbageTable_header">
+                        <div id="lotteryScreen" class="myWords">
+                            {{garbageName}}
+                        </div>
+                    </div>
+                    <div class="garbage_judge">
+                        <div id="garbage_1" class="interact_judge_width">
+                            <div v-if="handFlag==1">
+                                <img src="../images/garbage.png" width="66px"/>
+                            </div>
+                            <div v-if="resultFlag_1==1">
+                                <img src="../images/TureAnswer.png" width="66px"/>
+                            </div>
+                            <div v-else-if="resultFlag_1==-1">
+                                <img src="../images/wrongAnswer.png" width="66px"/>
+                            </div>
+                        </div>
+                        <div id="garbage_2" class="interact_judge_width">
+                            <div v-if="handFlag==2">
+                                <img src="../images/garbage.png" width="66px"/>
+                            </div>
+                            <div v-if="resultFlag_2==2">
+                                <img src="../images/TureAnswer.png" width="66px"/>
+                            </div>
+                            <div v-else-if="resultFlag_2==-1">
+                                <img src="../images/wrongAnswer.png" width="66px"/>
+                            </div>
+                        </div>
+
+                        <div id="garbage_3" class="interact_judge_width">
+                            <div v-if="handFlag==3">
+                                <img src="../images/garbage.png" width="66px"/>
+                            </div>
+                            <div v-if="resultFlag_3==3">
+                                <img src="../images/TureAnswer.png" width="66px"/>
+                            </div>
+                            <div v-else-if="resultFlag_3==-1">
+                                <img src="../images/wrongAnswer.png" width="66px"/>
+                            </div>
+                        </div>
+
+                        <div id="garbage_4" class="interact_judge_width">
+                            <div v-if="handFlag==4">
+                                <img src="../images/garbage.png" width="66px"/>
+                            </div>
+                            <div v-if="resultFlag_4==4">
+                                <img src="../images/TureAnswer.png" width="66px"/>
+                            </div>
+                            <div v-else-if="resultFlag_4==-1">
+                                <img src="../images/wrongAnswer.png" width="66px"/>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div id="interact_garbage" class="interact_garbage">
+                        <div id="garbage1" @mouseenter="enter(1)" @mouseleave="leave()"
+                             @click="clickflag == 1&&sorting('厨余垃圾', 1)" class="interact_image_width">
+                            <el-tooltip class="item" effect="dark" content="厨余垃圾" placement="top-start">
+                                <img src="../images/chuyu.png" width="100px"
+                                     :class="{image_mouseenter_1:Answer_Flag==true,image_mouseenter_2:Answer_Flag==false}"
+                                     id="images_1"/>
+                            </el-tooltip>
+                        </div>
+
+                        <div id="garbage2" @mouseenter="enter(2)" @mouseleave="leave()"
+                             @click="clickflag == 1&&sorting('可回收物', 2)" class="interact_image_width">
+                            <el-tooltip class="item" effect="light" content="可回收物" placement="top">
+                                <img src="../images/kehuishou.png" width="100px"
+                                     :class="{image_mouseenter_1:Answer_Flag==true,image_mouseenter_2:Answer_Flag==false}"
+                                     id="images_2"/>
+                            </el-tooltip>
+                        </div>
+
+                        <div id="garbage3" @mouseenter="enter(3)" @mouseleave="leave()"
+                             @click="clickflag == 1&&sorting('其他垃圾', 3)" class="interact_image_width">
+                            <el-tooltip class="item" effect="dark" content="其他垃圾" placement="top">
+                                <img src="../images/qita.png" width="100px"
+                                     :class="{image_mouseenter_1:Answer_Flag==true,image_mouseenter_2:Answer_Flag==false}"
+                                     id="images_3"/>
+                            </el-tooltip>
+                        </div>
+
+                        <div id="garbage4" @mouseenter="enter(4)" @mouseleave="leave()"
+                             @click="clickflag == 1&&sorting('有害垃圾', 4)" class="interact_image_width">
+                            <el-tooltip class="item" effect="light" content="有害垃圾" placement="top-end">
+                                <img src="../images/youhai.png" width="100px"
+                                     :class="{image_mouseenter_1:Answer_Flag==true,image_mouseenter_2:Answer_Flag==false}"
+                                     id="images_4"/>
+                            </el-tooltip>
+                        </div>
+                    </div>
+                    <div id="select_button" class="select_button">
+                        <input type="button" class="button" value="开始" @click="start()"/>
+                        <input type="button" class="button" value="停止" @click="stop()"/>
+                    </div>
+                    <div id="game_ret">
+                        <el-row :gutter="20" type="flex" justify="center" class="progress_bar">
+                            <el-col :span="2">
+                                总题数
+                            </el-col>
+                            <el-col :span="18">
+                                <el-progress :text-inside="true" :stroke-width="26"
+                                             :percentage="game_total"></el-progress>
+                            </el-col>
+                        </el-row>
+                        <el-row :gutter="20" type="flex" justify="center" class="progress_bar">
+                            <el-col :span="2">
+                                正确率
+                            </el-col>
+                            <el-col :span="18">
+                                <el-progress :text-inside="true" :stroke-width="24" :percentage="game_True"
+                                             status="success"></el-progress>
+                            </el-col>
+                        </el-row>
+                        <el-row :gutter="20" type="flex" justify="center" class="progress_bar">
+                            <el-col :span="2">
+                                错误率
+                            </el-col>
+                            <el-col span="18">
+                                <el-progress :text-inside="true" :stroke-width="24" :percentage="game_False"
+                                             status="exception"></el-progress>
+                            </el-col>
+                        </el-row>
+                    </div>
+                </div>
+            </el-col>
+        </el-row>
+    </div>
+    <el-footer>
+        版权所有 © 浙大宁波理工学院数据分院
+    </el-footer>
+</el-container>
+
+<script src="../plugin/md5.js" type="text/javascript"></script>
+<script src="../plugin/axios.min.js" type="text/javascript"></script>
+<script src="../plugin/qs.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="../plugin/vue.min.js"></script>
+<script type="text/javascript" src="../plugin/element.js"></script>
+<script src="../plugin/garbage.js"></script>
+
+<script type="text/javascript"></script>
+
+</body>
+</html>

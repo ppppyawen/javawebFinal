@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>问卷答题</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" type="text/css" href="../../plugin/element.css">
+</head>
+<style>
+    *{
+        padding: 0;
+        margin: 0;
+    }
+    html,body{
+        width: 100%;
+        height: 100%;
+    }
+    #questionnaire{
+        height: 100%;
+    }
+    .el-container{
+        width: 100%;
+        top: 0px;
+        left: 0;
+        bottom: 0
+    }
+    .el-header{
+        color:#333;
+        line-height: 60px;
+    }
+    .el-aside{
+        color:#333;
+        line-height: 200px;
+    }
+    .el-main{
+        color: #333;
+        text-align: center;
+    }
+    .el-header .el-menu{
+        border-bottom: none;
+    }
+    .el-aside .el-main{
+        padding-top: 60px;
+    }
+    .el-aside .el-menu{
+        border-right: none;
+    }
+    .color-red{
+        color: red !important;
+    }
+    .color-green{
+        color:green !important;
+    }
+    /**************** 修改或增加的css *****************/
+    .el-main{
+        text-align: center;
+    }
+    .sub-nav{
+        width: 300px;
+        height: 100%;
+        background-image: linear-gradient(to top, #accbee 0%, #e7f0fd 100%);
+    }
+    .head{
+        height: 50px;
+        display: flex;
+        align-items: center;
+        color: white;
+        margin-bottom: 0px;
+        background: rgba(52,152,219,0.8);
+    }
+    .el-page-header__content{
+        color: white;
+    }
+
+    .el-menu{
+        background-color: rgba(255,255,255,0);
+    }
+</style>
+<body>
+<el-container id="questionnaire">
+    <el-header class="head">
+        <el-page-header @back="goBack" content="问卷答题界面">
+        </el-page-header>
+    </el-header>
+    <el-container>
+        <el-aside>
+            <div class="sub-nav">
+                <el-menu
+                        default-active="2-1"
+                        class="el-menu-vertical-demo"
+                        @open="handleOpen"
+                        @close="handleClose">
+                    <el-menu-item index="1">
+                        <i class="el-icon-data-analysis"></i>
+                        <el-button type="text" @click="goToWelcome()">数据统计</el-button>
+                    </el-menu-item>
+                    <el-submenu index="2">
+                        <template slot="title">
+                            <i class="el-icon-s-order"></i>
+                            <span>答题模块</span>
+                        </template>
+                        <el-menu-item-group>
+                            <el-menu-item index="2-1">
+                                <i class="el-icon-tickets"></i>
+                                <el-button type="text" @click="goToQuestion()">用户答题</el-button>
+                            </el-menu-item>
+                            <el-menu-item index="2-2">
+                                <i class="el-icon-document"></i>
+                                <el-button type="text" @click="goToHistory()">历史答题</el-button>
+                            </el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
+                    <el-menu-item index="3">
+                        <i class="el-icon-medal"></i>
+                        <el-button type="text" @click="goToGame()">用户练习</el-button>
+                    </el-menu-item>
+                    <el-menu-item index="4">
+                        <i class="el-icon-back"></i>
+                        <el-button type="text" @click="goBack()" style="color: #eeeeee">返回主页</el-button>
+                    </el-menu-item>
+                </el-menu>
+            </div>
+        </el-aside>
+        <el-main>
+            <el-row>
+                <el-col>
+             <el-form ref="QuestionFrom" :rules="rules" :model="QuestionFrom" :label-position="labelPosition" label-width="100px" v-loading="loading">
+
+                 <el-form-item prop="answer1">
+                     <span slot="label">1.{{garbageList[0]}}是什么垃圾?</span>
+                     <el-radio-group v-if="submitJudge == 0"  v-model="QuestionFrom.answer1" style="width: 100%">
+                         <checkitem></checkitem>
+                     </el-radio-group>
+                     <div v-if="submitJudge == 1">
+                     <span v-if="garbageResultList[0].sortId==garbageAnswerList[0]"  class="color-green">
+                         恭喜您!回答正确!正确答案是{{garbageResultList[0].sortName}}!
+                     </span>
+                     <span v-if="garbageResultList[0].sortId!=garbageAnswerList[0]" class="color-red">
+                         回答错误！正确答案是{{garbageResultList[0].sortName}}!
+                     </span>
+                     </div>
+                 </el-form-item>
+
+                 <el-form-item prop="answer2">
+                     <span slot="label">2.{{garbageList[1]}}是什么垃圾?</span>
+                     <el-radio-group v-if="submitJudge == 0" v-model="QuestionFrom.answer2">
+                         <checkitem></checkitem>
+                     </el-radio-group>
+                     <div v-if="submitJudge == 1">
+                     <span v-if="garbageResultList[1].sortId==garbageAnswerList[1]"  class="color-green">
+                         恭喜您!回答正确!正确答案是{{garbageResultList[1].sortName}}!
+                     </span>
+                         <span v-if="garbageResultList[1].sortId!=garbageAnswerList[1]" class="color-red">
+                         回答错误！正确答案是{{garbageResultList[1].sortName}}!
+                     </span>
+                     </div>
+                 </el-form-item>
+
+                 <el-form-item prop="answer3">
+                     <span slot="label">3.{{garbageList[2]}}是什么垃圾?</span>
+                     <el-radio-group v-if="submitJudge == 0" v-model="QuestionFrom.answer3">
+                         <checkitem></checkitem>
+                     </el-radio-group>
+                     <div v-if="submitJudge == 1">
+                     <span v-if="garbageResultList[2].sortId==garbageAnswerList[2]"  class="color-green">
+                         恭喜您!回答正确!正确答案是{{garbageResultList[2].sortName}}!
+                     </span>
+                         <span v-if="garbageResultList[2].sortId!=garbageAnswerList[2]" class="color-red">
+                         回答错误！正确答案是{{garbageResultList[2].sortName}}!
+                     </span>
+                     </div>
+                 </el-form-item>
+
+                 <el-form-item prop="answer4">
+                     <span slot="label">4.{{garbageList[3]}}是什么垃圾?</span>
+                     <el-radio-group v-if="submitJudge == 0" v-model="QuestionFrom.answer4">
+                         <checkitem></checkitem>
+                     </el-radio-group>
+                     <div v-if="submitJudge == 1">
+                     <span v-if="garbageResultList[3].sortId==garbageAnswerList[3]"  class="color-green">
+                         恭喜您!回答正确!正确答案是{{garbageResultList[3].sortName}}!
+                     </span>
+                         <span v-if="garbageResultList[3].sortId!=garbageAnswerList[3]" class="color-red">
+                         回答错误！正确答案是{{garbageResultList[3].sortName}}!
+                     </span>
+                     </div>
+                 </el-form-item>
+
+                 <el-form-item prop="answer5">
+                     <span slot="label">5.{{garbageList[4]}}是什么垃圾?</span>
+                     <el-radio-group v-if="submitJudge == 0" v-model="QuestionFrom.answer5">
+                         <checkitem></checkitem>
+                     </el-radio-group>
+                     <div v-if="submitJudge == 1">
+                     <span v-if="garbageResultList[4].sortId==garbageAnswerList[4]"  class="color-green">
+                         恭喜您!回答正确!正确答案是{{garbageResultList[4].sortName}}!
+                     </span>
+                         <span v-if="garbageResultList[4].sortId!=garbageAnswerList[4]" class="color-red">
+                         回答错误！正确答案是{{garbageResultList[4].sortName}}!
+                     </span>
+                     </div>
+                 </el-form-item>
+
+                 <el-form-item prop="answer6">
+                     <span slot="label">6.{{garbageList[5]}}是什么垃圾?</span>
+                     <el-radio-group v-if="submitJudge == 0" v-model="QuestionFrom.answer6">
+                         <checkitem></checkitem>
+                     </el-radio-group>
+                     <div v-if="submitJudge == 1">
+                     <span v-if="garbageResultList[5].sortId==garbageAnswerList[5]"  class="color-green">
+                         恭喜您!回答正确!正确答案是{{garbageResultList[5].sortName}}!
+                     </span>
+                         <span v-if="garbageResultList[5].sortId!=garbageAnswerList[5]" class="color-red">
+                         回答错误！正确答案是{{garbageResultList[5].sortName}}!
+                     </span>
+                     </div>
+                 </el-form-item>
+
+                 <el-form-item prop="answer7">
+                     <span slot="label">7.{{garbageList[6]}}是什么垃圾?</span>
+                     <el-radio-group v-if="submitJudge == 0" v-model="QuestionFrom.answer7">
+                         <checkitem></checkitem>
+                     </el-radio-group>
+                     <div v-if="submitJudge == 1">
+                     <span v-if="garbageResultList[6].sortId==garbageAnswerList[6]"  class="color-green">
+                         恭喜您!回答正确!正确答案是{{garbageResultList[6].sortName}}!
+                     </span>
+                         <span v-if="garbageResultList[6].sortId!=garbageAnswerList[6]" class="color-red">
+                         回答错误！正确答案是{{garbageResultList[6].sortName}}!
+                     </span>
+                     </div>
+                 </el-form-item>
+
+                 <el-form-item prop="answer8">
+                     <span slot="label">8.{{garbageList[7]}}是什么垃圾?</span>
+                     <el-radio-group v-if="submitJudge == 0" v-model="QuestionFrom.answer8">
+                         <checkitem></checkitem>
+                     </el-radio-group>
+                     <div v-if="submitJudge == 1">
+                     <span v-if="garbageResultList[7].sortId==garbageAnswerList[7]"  class="color-green">
+                         恭喜您!回答正确!正确答案是{{garbageResultList[7].sortName}}!
+                     </span>
+                         <span v-if="garbageResultList[7].sortId!=garbageAnswerList[7]" class="color-red">
+                         回答错误！正确答案是{{garbageResultList[7].sortName}}!
+                     </span>
+                     </div>
+                 </el-form-item>
+
+                 <el-form-item prop="answer9">
+                     <span slot="label">9.{{garbageList[8]}}是什么垃圾?</span>
+                     <el-radio-group v-if="submitJudge == 0" v-model="QuestionFrom.answer9">
+                         <checkitem></checkitem>
+                     </el-radio-group>
+                     <div v-if="submitJudge == 1">
+                     <span v-if="garbageResultList[8].sortId==garbageAnswerList[8]"  class="color-green">
+                         恭喜您!回答正确!正确答案是{{garbageResultList[8].sortName}}!
+                     </span>
+                         <span v-if="garbageResultList[8].sortId!=garbageAnswerList[8]" class="color-red">
+                         回答错误！正确答案是{{garbageResultList[8].sortName}}!
+                     </span>
+                     </div>
+                 </el-form-item>
+
+                 <el-form-item prop="answer10">
+                     <span slot="label">10{{garbageList[9]}}是什么垃圾?</span>
+                     <el-radio-group v-if="submitJudge == 0" v-model="QuestionFrom.answer10">
+                         <checkitem></checkitem>
+                     </el-radio-group>
+                     <div v-if="submitJudge == 1">
+                     <span v-if="garbageResultList[9].sortId==garbageAnswerList[9]"  class="color-green">
+                         恭喜您!回答正确!正确答案是{{garbageResultList[9].sortName}}!
+                     </span>
+                         <span v-if="garbageResultList[9].sortId!=garbageAnswerList[9]" class="color-red">
+                         回答错误！正确答案是{{garbageResultList[9].sortName}}!
+                     </span>
+                     </div>
+                 </el-form-item>
+
+                 <el-form-item>
+                     <el-button v-if="submitJudge == 0" type="primary" @click="submitForm('QuestionFrom')">提交</el-button>
+                     <el-button v-if="submitJudge == 1" type="primary" @click="again">再来一次</el-button>
+                     <el-button @click="resetForm('QuestionFrom')">重置</el-button>
+                 </el-form-item>
+             </el-form>
+            </el-col>
+            </el-row>
+        </el-main>
+    </el-container>
+</el-container>
+
+<script type="text/javascript" src="../../plugin/vue.min.js"></script>
+<!-- 引入组件库 -->
+<script type="text/javascript" src="../../plugin/element.js"></script>
+<script type="text/javascript" src="../../plugin/axios.min.js"></script>
+
+<script type="text/javascript">
+    var vm = new Vue({
+        el: '#questionnaire',
+        data: function(){
+
+            return {
+                rules:{
+                    answer1:[
+                        {required: true,message: '请填写该选项！', trigger: 'change'}
+                    ],
+                    answer2:[
+                        {required: true,message: '请填写该选项！', trigger: 'change'}
+                    ],
+                    answer3:[
+                        {required: true,message: '请填写该选项！', trigger: 'change'}
+                    ],
+                    answer4:[
+                        {required: true,message: '请填写该选项！', trigger: 'change'}
+                    ],
+                    answer5:[
+                        {required: true,message: '请填写该选项！', trigger: 'change'}
+                    ],
+                    answer6:[
+                        {required: true,message: '请填写该选项！', trigger: 'change'}
+                    ],
+                    answer7:[
+                        {required: true,message: '请填写该选项！', trigger: 'change'}
+                    ],
+                    answer8:[
+                        {required: true,message: '请填写该选项！', trigger: 'change'}
+                    ],
+                    answer9:[
+                        {required: true,message: '请填写该选项！', trigger: 'change'}
+                    ],
+                    answer10:[
+                        {required: true,message: '请填写该选项！', trigger: 'change'}
+                    ],
+                },
+                listNumber:[1,2,3,4,5,6,7,8,9,10],
+                labelPosition: 'top',
+                QuestionJson: '',
+                garbageList:[],
+                garbageIdList:[],
+                garbageAnswerList:[],
+                garbageResultList:'',
+                garbageResultName:[],
+                QuestionFrom:{
+                    answer1: '',
+                    answer2: '',
+                    answer3: '',
+                    answer4: '',
+                    answer5: '',
+                    answer6: '',
+                    answer7: '',
+                    answer8: '',
+                    answer9: '',
+                    answer10: '',
+                },
+                userId:"",
+                submitJudge:0,
+                loading: false,
+            };
+        },
+
+        components:{
+            'checkitem':{
+                template:`
+                    <div>
+                    <el-radio border label="1">可回收垃圾</el-radio>
+                    <el-radio border label="2">有害垃圾</el-radio>
+                    <el-radio border label="3">厨余垃圾</el-radio>
+                    <el-radio border label="4">其他垃圾</el-radio>
+                    </div>
+                `
+            }
+            ,
+            'questionitem':{
+                template:`
+
+                `
+            }
+        },
+
+        mounted: function () {
+             this.getGarbage();
+        },
+        methods: {
+            getGarbage: function () {
+                let _this = this;
+                axios.get('../../api/quest/topic').then(function (response) {
+                    _this.QuestionJson = response.data.listGarbage;
+                    for(var i=0;i<_this.QuestionJson.length;i++){
+                        _this.garbageList.push(_this.QuestionJson[i].garbageName);
+                        _this.garbageIdList.push(_this.QuestionJson[i].garbageId);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            submitForm(formName) {
+                let _this = this;
+                _this.loading = true;
+                for(let i=1;i<=10;i++)
+                {
+                    let answer = eval("_this.QuestionFrom.answer"+i)
+                    _this.garbageAnswerList.push(answer);
+                }
+                let postData = new FormData();
+                //postData.append('examSn',timeString);
+                postData.append('garbageIdList',_this.garbageIdList);
+                postData.append('garbageAnswerList',_this.garbageAnswerList);
+                _this.$refs[formName].validate((valid)=>{
+                    if(valid){
+                        axios.post('../../api/quest/insert',postData).then(function (response) {
+                            setTimeout(function () {
+                                _this.loading = false;
+                                _this.submitJudge = 1;
+                            },1000)
+                            _this.garbageResultList = response.data.resultList;
+                        })
+                    }else{
+                        this.$message.error('请填写所有选项！');
+                        setTimeout(function () {
+                            _this.loading = false;
+                        },500)
+                        return false;
+                    }
+                });
+
+            },
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+            },
+            handleOpen(key, keyPath) {
+                console.log(key, keyPath);
+            },
+            handleClose(key, keyPath) {
+                console.log(key, keyPath);
+            },
+            goBack() {
+                location.href = '../../index.html';
+            },
+            again(){
+                location.href = 'Question.html';
+            },
+            goToHistory() {
+                location.href = 'QuestionHistory.html';
+            },
+            goToQuestion() {
+                location.href = 'Question.html';
+            },
+            goToGame(){
+                location.href = '../garbage.html';
+            },
+            goToWelcome(){
+                location.href = 'QuestionWelcome.html';
+            }
+        }
+    })
+</script>
+</body>
+</html>

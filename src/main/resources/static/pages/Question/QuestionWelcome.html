@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>问卷答题</title>
+    <!-- 引入样式 -->
+
+    <link rel="stylesheet" type="text/css" href="../../plugin/element.css">
+</head>
+<style>
+    *{
+        padding: 0;
+        margin: 0;
+    }
+    html,body{
+        width: 100%;
+        height: 100%;
+    }
+    #questionnaire{
+        height: 100%;
+    }
+    .el-container{
+        width: 100%;
+        top: 0px;
+        left: 0;
+        bottom: 0
+    }
+    .el-header{
+        color:#333;
+        line-height: 60px;
+    }
+    .el-aside{
+        color:#333;
+        line-height: 200px;
+    }
+    .el-main{
+        color: #333;
+        text-align: center;
+    }
+    .el-header .el-menu{
+        border-bottom: none;
+    }
+    .el-aside .el-main{
+        padding-top: 60px;
+    }
+    .el-aside{
+        background-color: #545c64;
+    }
+    .el-aside .el-menu{
+        border-right: none;
+    }
+    .color-red{
+        color: red !important;
+    }
+    .color-green{
+        color:green !important;
+    }
+    .el-dropdown-link {
+        cursor: pointer;
+
+    }
+    .el-line-dom{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .el-icon-arrow-down {
+        font-size: 12px;
+    }
+    .avatar-uploader .el-upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    .avatar-uploader .el-upload:hover {
+        border-color: #409EFF;
+    }
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 178px;
+        height: 178px;
+        line-height: 178px;
+        text-align: center;
+    }
+    .avatar {
+        width: 178px;
+        height: 178px;
+        display: block;
+    }
+    .avatar-uploader{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    /**************** 修改或增加的css *****************/
+    .el-main{
+        text-align: left;
+    }
+    .sub-nav{
+        width: 300px;
+        height: 100%;
+        background-image: linear-gradient(to top, #accbee 0%, #e7f0fd 100%);
+    }
+    .head{
+        height: 50px;
+        display: flex;
+        align-items: center;
+        color: white;
+        margin-bottom: 0px;
+        background: rgba(52,152,219,0.8);
+    }
+    .el-page-header__content{
+        color: white;
+    }
+
+    .el-menu{
+        background-color: rgba(255,255,255,0);
+    }
+</style>
+<body>
+<el-container id="questionnaire">
+    <el-header style="background: rgba(52,152,219,0.8);color: white;margin-bottom: 0px;">
+        <el-row>
+            <el-col :span="5">
+                <el-page-header @back="goBack" content="问卷答题界面">
+                </el-page-header>
+            </el-col>
+
+            <el-col :span="3" offset="16">
+                <el-dropdown @command="handleCommand">
+                    <el-avatar :size="size" :src="circleUrl" class="el-dropdown-link" @error="errorHandler"></el-avatar>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item command="uploadImage">上传头像</el-dropdown-item>
+                        <el-dropdown-item command="logOut" divided>退出登录</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </el-col>
+        </el-row>
+
+    </el-header>
+    <el-container>
+        <el-aside>
+            <div class="sub-nav">
+                <el-menu
+                        default-active="1"
+                        class="el-menu-vertical-demo"
+                        @open="handleOpen"
+                        @close="handleClose">
+                    <el-menu-item index="1">
+                        <i class="el-icon-data-analysis"></i>
+                        <el-button type="text" @click="goToWelcome()">数据统计</el-button>
+                    </el-menu-item>
+                    <el-submenu index="2">
+                        <template slot="title">
+                            <i class="el-icon-s-order"></i>
+                            <span>答题模块</span>
+                        </template>
+                        <el-menu-item-group>
+                            <el-menu-item index="2-1">
+                                <i class="el-icon-tickets"></i>
+                                <el-button type="text" @click="goToQuestion()">用户答题</el-button>
+                            </el-menu-item>
+                            <el-menu-item index="2-2">
+                                <i class="el-icon-document"></i>
+                                <el-button type="text" @click="goToHistory()">历史答题</el-button>
+                            </el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
+                    <el-menu-item index="3">
+                        <i class="el-icon-medal"></i>
+                        <el-button type="text" @click="goToGame()">用户练习</el-button>
+                    </el-menu-item>
+                    <el-menu-item index="4">
+                        <i class="el-icon-back"></i>
+                        <el-button type="text" @click="goBack()">返回主页</el-button>
+                    </el-menu-item>
+                </el-menu>
+            </div>
+        </el-aside>
+        <el-main>
+            <el-row :gutter = "20" type="flex" justify="center">
+                <el-col :span="12">
+                    <el-card style="align-items: center" header="用户答题情况统计" style="font-weight: bold">
+                        <div id="QuestionEchart" style="height: 350px;width: 100%; align-items: center"></div>
+                    </el-card>
+                </el-col>
+                <el-col :span ="12">
+                    <el-card style="align-items: center" header="用户答题正确率排名" style="font-weight: bold">
+                        <div id="QuestionRanking" style="height: 350px;width: 100%; align-item:center"></div>
+                    </el-card>
+                </el-col>
+            </el-row>
+            <el-row :gutter="20" type="flex" justify="center" style="margin-top: 20px">
+                <el-col :span="24">
+                    <el-card style="align-items: center" header="近5次答题情况统计" style="font-weight: bold">
+                        <div id="QuestionlineChart" style="height: 400px;width:100%;align-items: center"></div>
+                    </el-card>
+                </el-col>
+            </el-row>
+        </el-main>
+
+        <el-dialog
+                title="头像上传"
+                :visible.sync="dialogFormVisible"
+                center
+                width="25%"
+
+        >
+            <el-upload
+                    class="avatar-uploader"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :show-file-list="false"
+                    :on-success="handleAvatarSuccess"
+                    :before-upload="beforeAvatarUpload"
+                    :on-change="getFile"
+            >
+                <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取 消</el-button>
+                <el-button type="primary" @click="userImageUpload()">确 定</el-button>
+            </div>
+        </el-dialog>
+
+    </el-container>
+</el-container>
+
+<script type="text/javascript" src="../../plugin/vue.min.js"></script>
+<!-- 引入组件库 -->
+<script type="text/javascript" src="../../plugin/element.js"></script>
+<script type="text/javascript" src="../../plugin/axios.min.js"></script>
+<script src="../../plugin/echarts.min.js"></script>
+
+
+
+<script type="text/javascript">
+    var vm = new Vue({
+        el: '#questionnaire',
+        data: function(){
+
+            return {
+                typeTitle:'',
+                typeData:[],
+                rankData:[],
+                rankDataName:[],
+                rankDataMath:[],
+                rankDataTrue:[],
+                LineData:[],
+                LineDataName:[],
+                LineDataTrue:[],
+                LineDataWrong:[],
+                size:"large",
+                circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+                dialogFormVisible: false,
+                imageUrl:'',
+                imageData:'',
+
+            };
+
+
+        },
+
+        mounted: function () {
+            this.initEchart();
+            this.initRanking();
+            this.initLineChart();
+        },
+        methods: {
+            initEchart(){
+                let _this = this;
+                let myChart = echarts.init(document.getElementById('QuestionEchart'));
+                axios.get('../../api/quest/garbagePie').then(function (response) {
+                    _this.typeData = response.data;
+                    let true_answer = _this.typeData.trueCount;
+                    let wrong_answer = _this.typeData.wrongCount;
+                    let name1 = '正确答案';
+                    let name2 = '错误答案';
+                    let arr=[];
+                    arr.push({value:true_answer,name:name1});
+                    arr.push({value:wrong_answer,name:name2});
+                    myChart.setOption({
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: '{a} <br/>{b}: {c} ({d}%)'
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            left: 10,
+                            data: ['正确答案', '错误答案']
+                        },
+
+                        series: [
+                            {
+                                name: '答题情况',
+                                type: 'pie',
+                                radius: ['50%', '70%'],
+                                avoidLabelOverlap: false,
+                                label: {
+                                    show: false,
+                                    position: 'center'
+                                },
+                                emphasis: {
+                                    label: {
+                                        show: true,
+                                        fontSize: '30',
+                                        fontWeight: 'bold'
+                                    }
+                                },
+                                labelLine: {
+                                    show: false
+                                },
+                                data: arr,
+                            }
+                        ]
+                    })
+
+                }).catch(function (error) {
+                    console.log(error);
+                });
+                window.addEventListener("resize",function () {
+                    myChart.resize();
+                })
+            },
+            initRanking(){
+              let _this = this;
+              let myChart = echarts.init(document.getElementById('QuestionRanking'));
+              axios.get('../../api/quest/garbageRanking').then(function (response) {
+                     _this.rankData = response.data.examTable;
+                     for(i=_this.rankData.length-1;i>=0;i--){
+                         _this.rankDataName.push(_this.rankData[i].userName);
+                         _this.rankDataTrue.push(parseInt(_this.rankData[i].trueAnswer)/parseInt(_this.rankData[i].totalAnswer)*100);
+                     }
+                     myChart.setOption({
+                         title: {
+                             text: '答题正确率排名',
+                             subtext: '数据只取前10名'
+                         },
+                         tooltip: {
+                             trigger: 'axis',
+                             axisPointer: {
+                                 type: 'shadow'
+                             }
+                         },
+                         color:['#6ba2d5']
+                         ,
+                         legend: {
+                             data: ['正确率']
+                         },
+                         grid: {
+                             left: '3%',
+                             right: '4%',
+                             bottom: '3%',
+                             containLabel: true
+                         },
+                         xAxis: {
+                             type: 'value',
+                             boundaryGap: [0, 0.01]
+                         },
+                         yAxis: {
+                             type: 'category',
+                             data: _this.rankDataName,
+                         },
+                         series: [
+                             {
+                                 name: '正确率',
+                                 type: 'bar',
+                                 data: _this.rankDataTrue
+                             }
+                         ]
+                     })
+              }).catch(function (error) {
+                  console.log(error);
+              });
+                window.addEventListener("resize",function () {
+                    myChart.resize();
+                })
+            },
+            initLineChart(){
+                let _this = this;
+                let myChart = echarts.init(document.getElementById('QuestionlineChart'));
+                axios.get('../../api/quest/garbageLineChart').then(function (response) {
+                    _this.LineData = response.data.examTable;
+                    for(i=0;i<_this.LineData.length;i++)
+                    {
+                        _this.LineDataName.push(_this.LineData[i].createTime);
+                        _this.LineDataTrue.push(_this.LineData[i].trueCount);
+                        _this.LineDataWrong.push(_this.LineData[i].wrongCount);
+                    }
+                    myChart.setOption({
+                        title: {
+                            text: '近五次答题情况',
+                            subtext: '每次问卷10题统计'
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['正确数', '错误数']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                dataZoom: {
+                                    yAxisIndex: 'none'
+                                },
+                                dataView: {readOnly: false},
+                                magicType: {type: ['line', 'bar']},
+                                restore: {},
+                                saveAsImage: {}
+                            }
+                        },
+                        xAxis: {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: _this.LineDataName
+                        },
+                        yAxis: {
+                            type: 'value',
+                            axisLabel: {
+                                formatter: '{value} '
+                            }
+                        },
+                        series: [
+                            {
+                                name: '正确数',
+                                type: 'line',
+                                data: _this.LineDataTrue,
+                                markPoint: {
+                                    data: [
+                                        {type: 'max', name: '最大值'},
+                                        {type: 'min', name: '最小值'}
+                                    ]
+                                },
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+                            {
+                                name: '错误数',
+                                type: 'line',
+                                data: _this.LineDataWrong,
+                                markPoint: {
+                                    data: [
+                                        {type: 'max', name: '最大值'},
+                                        {type: 'min', name: '最小值'}
+                                    ]
+                                },
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'},
+                                        [{
+                                            symbol: 'none',
+                                            x: '90%',
+                                            yAxis: 'max'
+                                        }, {
+                                            symbol: 'circle',
+                                            label: {
+                                                position: 'start',
+                                                formatter: '最大值'
+                                            },
+                                            type: 'max',
+                                            name: '最高点'
+                                        }]
+                                    ]
+                                }
+                            }
+                        ]
+                    })
+                }).catch(function (error) {
+                    console.log(error);
+                })
+
+                window.addEventListener("resize",function () {
+                    myChart.resize();
+                })
+            },
+            handleSizeChange: function (size) {
+                this.pageSize = size;
+                this.getTableData();
+            },
+            handleOpen(key, keyPath) {
+                console.log(key, keyPath);
+            },
+            handleClose(key, keyPath) {
+                console.log(key, keyPath);
+            },
+            goBack() {
+                location.href = '../../index.html';
+            },
+            goToHistory() {
+                location.href = 'QuestionHistory.html';
+            },
+            goToQuestion() {
+                location.href = 'Question.html'
+            },
+            goToGame(){
+                location.href = '../garbage.html'
+            },
+            goToWelcome(){
+                location.href = 'QuestionWelcome.html'
+            },
+            errorHandler() {
+                this.circleUrl = "https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png";
+                return true;
+            },
+            handleCommand(command){
+              if(command == "resetPasswd"){
+                  this.resetPasswd();
+              }
+              else if(command == "uploadImage") {
+                   this.uploadImage();
+              }else if(command == "logOut"){
+                   this.loginOut();
+              }else{
+                this.$message('wrong!');
+            }
+            },
+            uploadImage:function (){
+                this.dialogFormVisible = true;
+            },
+            loginOut:function () {
+                this.$message({
+                    showClose: true,
+                    message: "正在退出,请稍后",
+                    type: 'success'
+                });
+                setTimeout( function () {
+                    location.href = '../../index.html';
+                    axios.post("../../api/user/logOut").then(function () {
+
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                },1000);
+            },
+            handleAvatarSuccess(res, file) {
+                this.imageUrl = URL.createObjectURL(file.raw);
+                //alert(this.imageUrl);
+                //alert(file)
+            },
+            beforeAvatarUpload(file) {
+                const isLt2M = file.size / 1024 / 1024 < 2;
+
+                if (!isLt2M) {
+                    this.$message.error('上传头像图片大小不能超过 2MB!');
+                }
+                return isLt2M;
+            },
+            getFile(file,fileList) {
+                var _this = this;
+                var event = event || window.event;
+                if(event.target.files[0]) {
+                    var file = event.target.files[0];
+                }
+                var reader = new FileReader();
+                //转base64
+                reader.onload = function(e) {//将图片路径赋值给src
+                    _this.imageData =e.target.result //将图片路径赋值给src
+                    //alert(_this.imageData);
+
+                }
+                reader.readAsDataURL(file);
+            }
+            ,
+            userImageUpload(){
+                const _this = this;
+                let postData = new FormData();
+                postData.append('imgBase64',_this.imageData);
+                axios.post('../../api/upload/userImage',postData).then(function (response) {
+                  _this.dlgFormVisible = false;
+                  if(response.data.intResult){
+                      _this.$message({
+                          showClose: true,
+                          message: response.data.objResult,
+                          type: 'success'
+                      });
+                  }
+                  _this.circleUrl = response.data.objResult;
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            }
+        }
+    })
+</script>
+</body>
+</html>

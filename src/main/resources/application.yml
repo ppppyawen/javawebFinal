@@ -1,0 +1,59 @@
+server:
+  port: 8080
+  max-http-header-size: 8192
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/javafinal?useUnicode=true&characterEncoding=utf-8&useSSL=true&useAffectedRows=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: 720027
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 30
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      use-global-data-source-stat: true
+      filters: stat,wall,log4j
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 0
+      max-file-size: -1
+      max-request-size: -1
+  thymeleaf:
+    cache: false
+    encoding: utf-8
+    mode: HTML5
+    prefix: classpath:/static/
+    suffix: .html
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  freemarker:
+    cache: false
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/resources/static/*
+      exclude: com/**
+    livereload:
+      enabled: true
+      port: 35730
+
+mybatis:
+  type-aliases-package: com.nit.ssm.dto
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+

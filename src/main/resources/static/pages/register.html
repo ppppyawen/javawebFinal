@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册界面</title>
+    <link rel="stylesheet" type="text/css" href="../plugin/register.css">
+    <link rel="stylesheet" type="text/css" href="../plugin/element.css">
+</head>
+<body>
+<div id="Container" >
+    <div id="Header" >
+        <div id="logo" align="center">
+<!--        <img src="../images/head_bk.jpg"/>-->
+        </div>
+    </div>
+    <div id="Content">
+      <div id="register_main" align="center">
+             <div align="center" class="registerTable" style="border:2px solid black;">
+                 <div class="register_bar">
+                    <h2 align="left">
+                        用户注册 
+                    </h2>
+                 </div>
+                 <el-form :model="registerForm" status-icon :rules="rules" ref="registerForm" label-width="100px" :label-position="labelPosition">
+                     <el-row type="flex" justify="center" >
+                         <el-col :span="16" >
+                            <el-form-item prop="registerPhone" label="手机号码:">
+                             <el-input v-model="registerForm.registerPhone" prefix-icon="el-icon-phone-outline" autocomplete="off" style="width: 520px"  id="registerPhone"></el-input>
+                            </el-form-item>
+                         </el-col>
+                     </el-row>
+                     <el-row type="flex" justify="center" class="login_show">
+                         <el-col :span="16" >
+                     <el-form-item prop="registerPwd" label="用户密码:">
+                          <el-input type="password" v-model="registerForm.registerPwd" prefix-icon="el-icon-lock" showpassword="true" id="registerPwd" style="width: 520px"></el-input>
+                     </el-form-item>
+                         </el-col>
+                     </el-row>
+                     <el-row type="flex" justify="center" class="login_show">
+                         <el-col :span="16" >
+                     <el-form-item prop="repetePwd" label="确认密码:">
+                         <el-input type="password" v-model="registerForm.repetePwd" prefix-icon="el-icon-key" id="repetePwd" style="width: 520px"></el-input>
+                     </el-form-item>
+                         </el-col>
+                     </el-row>
+                     <el-row type="flex" justify="center" class="login_show">
+                         <el-col :span="16" >
+                     <el-form-item prop="registerName" label="用户姓名:">
+                         <el-input v-model="registerForm.registerName" prefix-icon="el-icon-coffee" id="registerName" style="width: 520px"></el-input>
+                     </el-form-item>
+                         </el-col>
+                     </el-row>
+                     <el-row type="flex" justify="center" class="login_show">
+                         <el-col :span="16" >
+                     <el-form-item prop="registerId" label="身份证号:">
+                         <el-input v-model="registerForm.registerId" prefix-icon="el-icon-edit-outline" id="registerId" style="width: 520px"></el-input>
+                     </el-form-item>
+                         </el-col>
+                     </el-row>
+                 </el-form>
+                    <div class="Register_Result" >
+                        <div class="icon_image" align="center">
+<!--                            <img src="../images/22(1).png">-->
+                        </div>
+                        <div class="register_button">
+                         <el-button type="primary" :loading="judgeButton" @click="Check('registerForm')"  style="width: 80%;height: 35px">注册</el-button>
+                            <br>
+                         <a href="loginelement.html">已有账号？返回登陆</a>
+                        </div>
+                        <div class="icon_image">
+<!--                            <img src="../images/33.png" >-->
+                        </div>
+                    </div>
+             </div>
+      </div>
+
+    </div>
+    <div class="Clear">
+        <!--如果你上面用到float,下面布局开始前最好清除一下。-->
+    </div>
+    <div id="Footer" align="center" style="height: 20px">
+        版权所有 © 浙大宁波理工学院数据分院
+    </div>
+</div>
+<script src="../plugin/md5.js" type="text/javascript"></script>
+<script src="../plugin/axios.min.js" type="text/javascript"></script>
+<script src="../plugin/qs.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="../plugin/vue.min.js"></script>
+<script type="text/javascript" src="../plugin/element.js"></script>
+<script type="text/javascript">
+
+    new Vue({
+        el: '#Container',
+        data: function () {
+            var validatePwd = function (rule, value, callback) {
+                var strRegExp = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z_]{8,16}$/;
+                if (!strRegExp.test(value)) {
+                    callback(new Error('密码由数字和字母共同组成，且长度为8-16位'));
+                } else {
+                    callback();
+                }
+            };
+            var validateUser = function (rule,value,callback) {
+                var strRegPhone = /^1[3|4|5|7|8]\d{9}$/;
+                var strRegEmail = /^[A-Za-z0-9._%-]+@([A-Za-z0-9-]+\.)+[A-Za-z]{2,4}$/;
+
+
+                    if(!strRegEmail.test(value)&&!strRegPhone.test(value)){
+                        callback(new Error('请输入正确的手机号或邮箱格式'));
+                    }else{
+                        callback();
+                        this.activeStep++;
+                    }
+
+            };
+
+            var validateUserRepetite = function (rule,value,callback)  {
+                let _this = this;
+                let postData = new FormData();
+                postData.append("userPhone",value);
+                axios.post('../api/user/repetition',postData).then(function(response){
+                    if(response.data.strResult == "Repetite")
+                    {
+                        callback(new Error('该手机号已被人注册!'));
+                    } else{
+                        callback();
+                        _this.activeStep = _this.activeStep+1;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+
+            };
+
+            var validateRegisterId = function (rule,value,callback) {
+                var strRegExp = /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/;
+                if(!strRegExp.test(value)){
+                    callback(new Error('身份证格式错误'));
+                }else{
+                    callback();
+                }
+            }
+
+            var validatePwdRepete = (rule, value, callback) => {
+                if(value !== this.registerForm.registerPwd){
+                    callback(new Error('两次密码输入不一致'));
+                }else{
+                    callback();
+                }
+            };
+            return {
+                registerForm: {
+                    registerPhone: '',
+                    registerPwd: '',
+                    repetePwd: '',
+                    registerName:'',
+                    registerId:'',
+                },
+
+                labelPosition: 'right',
+                judgeButton:false,
+                //activeStep:0,
+                rules: {
+                    registerPhone: [
+                        {required: true, message: '手机号不能为空', trigger: ['blur','change']},
+                        {validator: validateUser, message: '请输入正确的手机号或邮箱格式', trigger: ['blur','change']},
+                        {validator: validateUserRepetite, message: '该手机号已被注册！',trigger: ['blur']}
+                    ],
+                    registerPwd: [
+                        {required: true, message: '密码不能为空', trigger: ['blur','change']},
+                        {validator: validatePwd, message: '密码由数字和字母共同组成，且长度为8-16位',trigger: ['blur','change']}
+                    ],
+                    repetePwd: [
+                        {required: true,message:'两次密码输入不一致', trigger:['blur']},
+                        {validator: validatePwdRepete,message: '两次密码输入不一致',trigger: ['blur']}
+                    ],
+                    registerName: [
+                        {required: true,message:'用户名不能为空',trigger:['blur']},
+                    ],
+                    registerId: [
+                        {required: true,message:'身份证号不能为空',trigger:['blur','change']},
+                        {validator: validateRegisterId,message: '身份证格式错误',trigger: ['blur','change']}
+                    ],
+                }
+            };
+        },
+
+        methods: {
+
+            Check: function (formName) {
+                this.judgeButton = true;
+                var strRegPhone = /^1[3|4|5|7|8]\d{9}$/;
+                var strRegEmail = /^[A-Za-z0-9._%-]+@([A-Za-z0-9-]+\.)+[A-Za-z]{2,4}$/;
+                var strRegPwd = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z_]{8,16}$/;
+                var strRegId = /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/;
+                if(!strRegPhone.test(this.registerForm.registerPhone)&&!strRegEmail.test(this.registerForm.registerPhone)){
+                    //alert(this.registerForm.registerPhone);
+                    this.$message.error('手机号格式错误，请重新输入!');
+                    this.judgeButton = false;
+                    return false;
+                }
+                if(!strRegPwd.test(this.registerForm.registerPwd))
+                {
+                    this.$message.error('密码格式错误,请重新输入！');
+                    this.judgeButton = false;
+                    return false;
+                }
+                if(this.registerForm.registerPwd!=this.registerForm.repetePwd){
+                    this.$message.error('两次密码输入不一致,请重新输入!');
+                    this.judgeButton = false;
+                    return false;
+                }
+                if(!strRegId.test(this.registerForm.registerId))
+                {
+                    this.$message.error('身份证格式不正确,请重新输入！');
+                    this.judgeButton = false;
+                    return false;
+                }
+                var _this = this;
+                this.$refs[formName].validate(function(valid){
+                    if(valid){
+                        let postData = new FormData();
+                        postData.append('userPhone',_this.registerForm.registerPhone);
+                        postData.append('userPwd',md5(_this.registerForm.registerPwd));
+                        postData.append('userName',_this.registerForm.registerName);
+                        postData.append('userCard',md5(_this.registerForm.registerId));
+                        //var postData = "{'registerPhone':'" + md5(_this.registerForm.registerPhone) + "', 'registerPwd': '" + md5(_this.registerForm.registerPwd) + "', 'registerName': '" + _this.registerForm.registerName + "','registerId':'"+ md5(_this.registerForm.registerId)+"','op':'"+"addUser"+"'}";
+                        axios.post('../api/user/add',postData).then(function(response){
+                            //alert(response.data);
+                            if(response.data.intResult) {
+                                _this.$message({
+                                    showClose: true,
+                                    message: '恭喜你，注册成功' +'用户名为:'+ _this.registerForm.registerName +'登陆账号为:'+_this.registerForm.registerPhone+'即将跳转到登录界面',
+                                    type: 'success'
+                                });
+                                setTimeout(function () {
+                                    location.href = 'loginelement.html';
+                                },2000)
+
+                                _this.judgeButton = false;
+                            }
+                            else {
+                                _this.judgeButton = false;
+                                _this.$message({
+                                   showClose: true,
+                                   message:'注册失败 请联系管理员！',
+                                   type: 'error'
+                                });
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
+                        });
+
+                    }else{
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+
+            }
+
+
+        }
+
+
+    })
+</script>
+</body>
+</html>

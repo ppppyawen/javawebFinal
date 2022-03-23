@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登陆界面</title>
+    <link rel="stylesheet" type="text/css" href="../plugin/loginelement.css">
+    <link rel="stylesheet" type="text/css" href="../plugin/element.css">
+    <style type="text/css">
+    </style>
+    <!-- JavaScript代码 -->
+</head>
+
+<body >
+
+<div id="Container">
+
+    <div id="Header" >
+        <div id="logo" align="center">
+            <img src="../images/head_bk.jpg"/>
+        </div>
+    </div>
+
+    <div id="Content">
+        <div id="login_banner">
+            <div class="loginLoading" style="border: 2px solid black; display: none " id="loginLoading" >
+                <div class="login_bar">
+                    <h2 align="center">
+                        用户登录
+                    </h2>
+                </div>
+                <hr size="2px" color="#333333" />
+                <div class="loading_gift" id="loading_gift">
+                    <img src="../images/loading4.gif" width="85%" height="75%"/>
+                </div>
+                <div>
+                    <h2 align="center" style="font-size: 25px;" id="login_loading">Loading....</h2>
+                </div>
+            </div>
+
+            <div class="loginLoading" style="border: 2px solid black; display: none " id="loginTrue" >
+                <div class="login_bar">
+                    <h2 align="center">
+                        用户登录
+                    </h2>
+                </div>
+                <hr size="2px" color="#333333" />
+
+                <div class="loading_true" id="loading_true_gift">
+                    <img src="../images/loginTrue.png" width="50%" height="50%">
+                </div>
+                <div>
+                    <h2 align="center" id="login_true_text">登陆成功！</h2>
+                </div>
+            </div>
+
+            <div class="loginLoading" style="border: 2px solid black; display: none " id="loginFalse" >
+                <div class="login_bar">
+                    <h2 align="center">
+                        用户登录
+                    </h2>
+                </div>
+                <hr size="2px" color="#333333" />
+
+                <div class="loading_False" id="loadingFalse_gift">
+                    <img src="../images/loginFalse.png" width="50%" height="50%">
+                </div>
+                <div>
+                    <h2 align="center" id="login_false_text">登陆失败！</h2>
+                </div>
+            </div>
+
+            <div class="loginTable" style="border:2px solid black;" id="loginTable">
+                <div class="login_bar">
+                    <h2 align="center">
+                        用户登录
+                    </h2>
+                </div>
+                <hr size="2px" color="#333333" />
+                <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm" label-width="0px">
+                    <el-row type="flex" justify="center">
+                        <el-form-item prop="userPhone">
+                            <el-input v-model="loginForm.userPhone" prefix-icon="el-icon-user" placeholder="手机号码/邮箱/用户账号" class="loginUser" style="width: 310px" id="userPhone"></el-input>
+                        </el-form-item>
+                    </el-row>
+                    <el-row type="flex" justify="center">
+                        <el-form-item prop="userPwd" size="medium">
+                            <el-input type="password" v-model="loginForm.userPwd" prefix-icon="el-icon-lock" autocomplete="off" style="width: 310px" id="userPwd" show-password="true"></el-input>
+                        </el-form-item>
+                    </el-row>
+                    <el-row type="flex" justify="center">
+                    <el-form-item prop="verifyCode">
+                        <el-input v-model="loginForm.verifyCode" prefix-icon="el-icon-warning-outline" placeholder="请输入验证码" autocomplete="off" style="width:310px" id="verifyCode"></el-input>
+                    </el-form-item>
+                    </el-row>
+                    <el-row :gutter="30" type="flex" justify="center">
+                        <el-col :span="8">
+                        <el-image
+                                style=""
+                                :src="url">
+                        </el-image>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-button type="text" @click="changeImage()">看不清，换一张</el-button>
+                        </el-col>
+                    </el-row>
+                    <div class="loginSelect" align="center">
+                        <el-row :gutter="20" type="flex" justify="center">
+                            <el-col :span="6">
+                        <el-checkbox v-model="rememberMe">记住密码</el-checkbox>
+                            </el-col>
+                            <el-col :span="6">
+                        <el-checkbox v-model="autologin">自动登录</el-checkbox>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-checkbox v-model="Administrator_login">管理员登录</el-checkbox>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <el-row type="flex" justify="center" style="margin-top: 10px">
+                    <el-form-item>
+                        <el-button type="primary" @click="judge('loginForm')">登录</el-button>
+                        <el-button @click="resetForm()">重置</el-button>
+                    </el-form-item>
+                    </el-row>
+                    <div align="right">
+                    <a href="register.html" target="_self">用户注册</a>
+                    </div>
+                </el-form>
+            </div>
+        </div>
+    </div>
+    <div class="Clear">
+        <!--如果你上面用到float,下面布局开始前最好清除一下。-->
+    </div>
+
+    <div id="Footer" align="center" style="height: 20px;">
+        版权所有 © 浙大宁波理工学院数据分院
+    </div>
+
+</div>
+<!--隐藏登录层-->
+<script src="../plugin/md5.js" type="text/javascript"></script>
+<script src="../plugin/axios.min.js" type="text/javascript"></script>
+<script src="../plugin/qs.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="../plugin/vue.min.js"></script>
+<script type="text/javascript" src="../plugin/element.js"></script>
+<script type="text/javascript">
+
+    new Vue({
+        el: '#Container',
+        data: function () {
+            var validatePwd = function (rule, value, callback) {
+                var strRegExp = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z_]{8,16}$/;
+                if (!strRegExp.test(value)) {
+                    callback(new Error('密码由数字和字母共同组成，且长度为8-16位'));
+                } else {
+                    callback();
+                }
+            };
+            var validateUser = function (rule,value,callback) {
+                var strRegPhone = /^1[3|4|5|7|8]\d{9}$/;
+                var strRegEmail = /^[A-Za-z0-9._%-]+@([A-Za-z0-9-]+\.)+[A-Za-z]{2,4}$/;
+                if(!strRegEmail.test(value)&&!strRegPhone.test(value)){
+                    callback(new Error('请输入正确的手机号或邮箱格式'));
+                }else{
+                    callback();
+                }
+            }
+            return {
+                loginForm: {
+                    userPhone: localStorage.getItem('loginCode'),
+                    userPwd: localStorage.getItem('loginPasswd'),
+                    verifyCode: '',
+
+                },
+                url:'../api/user/code',
+                rememberMe:true,
+                autologin:true,
+                Administrator_login:false,
+                rules: {
+                    userPhone: [
+                        {required: true, message: '请输入登录账号', trigger: ['blur','change']},
+                        {validator: validateUser, message: '请输入正确的手机号或邮箱格式', trigger: ['blur','change']}
+                    ],
+                    userPwd: [
+                        {required: true, message: '请输入登录密码', trigger: ['blur','change']},
+                        {validator: validatePwd, trigger: ['blur','change']}
+                    ],
+                    verifyCode: [
+                        {required: true,message:'请输入验证码', trigger:['blur','change']},
+                    ]
+
+                }
+            };
+        },
+
+        methods: {
+            resetForm: function (formName) {
+                 this.loginForm.userPhone = "";
+                 this.loginForm.userPwd = "";
+                 this.loginForm.verifyCode = "";
+                 this.rememberMe = false;
+                 this.autologin = false;
+            },
+            judge: function (formName) {
+                /*
+                var username = localStorage.getItem('loginCode');
+                var passwd = localStorage.getItem('loginPasswd');
+                var check_rememberMe = document.getElementById('rememberMe');
+                var check_autologin = document.getElementById("auto_login");
+                */
+
+                if(!this.loginForm.userPhone){
+                    this.$message.error('请输入用户名');
+                    return false;
+                }
+                if(!this.loginForm.userPwd&&this.loginFrom.userPhone){
+                    this.$message.error('请输入密码');
+                    return false;
+                }
+                if(!this.loginForm.verifyCode&&this.loginForm.userPwd&&this.loginForm.userPhone)
+                {
+                    this.$message.error('请输入验证码');
+                    return false;
+                }
+                if(this.rememberMe&&(this.loginForm.userPhone&&this.loginForm.userPwd)){
+                    localStorage.setItem("loginCode", this.loginForm.userPhone);
+                    localStorage.setItem("loginPasswd", this.loginForm.userPwd);
+                }else{
+                    localStorage.setItem("loginCode", "");
+                    localStorage.setItem("loginPasswd", "");
+                }
+
+                //axios.defaults.headers.post['Content-Type'] = 'multipart/form-data'
+                //let formData = new FormData();
+                //formData.append('userName',md5(document.getElementById("userPhone").value));
+                //formData.append('userPwd',md5(document.getElementById("userPwd").value));
+
+                document.getElementById("loginTable").style.display = "none";
+                document.getElementById("loginLoading").style.display = "block";
+                var login_tag = "1";
+                var _this = this;
+                this.$refs[formName].validate(function(valid){
+                    if(valid){
+                        let postData = new FormData();
+                        postData.append('userPhone',_this.loginForm.userPhone);
+                        postData.append('userPwd',md5(_this.loginForm.userPwd));
+                        postData.append('verifyCode',_this.loginForm.verifyCode);
+                        postData.append('Administrator_login',_this.Administrator_login);
+                        //var postData = "{'userPhone':'" + _this.loginForm.userPhone + "', 'userPwd': '" + _this.loginForm.userPwd + "', 'verifyCode': '" + _this.loginForm.verifyCode + "'}";
+                        axios.post('../api/user/login',postData).then(function(response){
+                            console.log(response.data);
+                            if(response.data.errCode == 200){
+
+                                _this.$message({
+                                    showClose: true,
+                                    message: '恭喜你，登陆成功',
+                                    type: 'success'
+                                });
+
+                                setTimeout(function () {
+                                    document.getElementById("loginTrue").style.display = "block";
+                                    document.getElementById("loginLoading").style.display = "none";
+                                    login_tag = "2";
+
+                                    if(login_tag == 2){
+                                        setTimeout(function () {
+                                            location.href = '../index.html';
+                                        },1000);
+                                    }
+
+                                },3000);
+                            }
+                            else if(response.data.errCode == 400)
+                            {
+                                _this.$message.error(response.data.errMsg);
+                                setTimeout(function () {
+                                    document.getElementById("loginTable").style.display = "block";
+                                    document.getElementById("loginLoading").style.display = "none";
+                                },1000)
+                            }
+                            else{
+                                _this.$message.error('登录失败!'+response.data);
+                                setTimeout(function () {
+                                    document.getElementById("loginFalse").style.display = "block";
+                                    document.getElementById("loginLoading").style.display = "none";
+                                },3000);
+                                setTimeout(function () {
+                                    document.getElementById("loginTable").style.display = "block";
+                                    document.getElementById("loginLoading").style.display = "none";
+                                    document.getElementById("loginFalse").style.display = "none";
+                                },1000)
+
+                            }
+                        }).catch(function (error) {
+                             console.log(error);
+                        });
+                    }else{
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            changeImage: function () {
+                let _this = this;
+                    _this.url = '../api/user/code?' + new Date().getTime();
+            }
+            }
+
+
+    })
+</script>
+
+</body>
+</html>

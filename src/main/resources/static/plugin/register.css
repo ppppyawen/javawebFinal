@@ -1,0 +1,189 @@
+@charset "utf-8";
+
+/* CSS Document */
+.registerMessage {
+    color: black;
+    font: bold 14px 微软雅黑 Light;
+	width:80%;
+}
+@charset "utf-8";
+/* CSS Document */
+/**CSS初始化**/
+body {
+    margin: 0;
+    padding: 0;
+}
+ 
+/**ID选择器**/
+#Container {
+	display: -webkit-flex;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+#Header {
+    height: 86px;
+    flex: 0 0 auto;
+	background-position:center;
+	background-color:#00A0DB;
+	margin-bottom:20px;
+	justify-content: center;
+}
+
+#Content {
+    /*重点掌握*/
+	display: -webkit-flex;
+    flex-grow: 1;
+    display: flex;
+	justify-content: center;
+    flex-direction: row;
+	align-items: center;
+    background:#FFF;
+}
+ 
+#Content-Left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align:center;
+    width: 200px;
+    margin: 5px 5px 5px 5px; /*设置元素跟其他元素的距离为20像素*/
+    background: #5bc0de;
+}
+ 
+#register_main {
+	display: flex;
+	display: -webkit-flex;
+	justify-content: center;
+	align-items: center;
+    flex-grow: 1;
+	flex-direction: row;
+    margin: 5px 0px 5px 0px; /*设置元素跟其他元素的距离为20像素*/
+	padding-bottom: 15px;
+}
+ 
+#Footer {
+    height: 190px;
+    padding-top: 15px;
+    background:#00A0DB;
+	font-family:"微软雅黑 Light";
+	font-size:14px;
+	font-weight:bold;
+	color:gray;
+	background-color:#00A0DB; 
+}
+ 
+
+
+/*html选择器*/
+h2 {
+	color: black;
+	font-family: "微软雅黑 Light";
+	font-size: 30px;
+	font-weight: bold;
+	margin-top:25px;
+}
+
+/*html选择器*/
+a:link {
+	color: #337ab7;
+	text-decoration: none;
+	font-family: "微软雅黑 Light";
+	font-size: 13px;
+	font-weight: bold;
+}
+
+/*html选择器*/
+a:visited {
+	color: #337ab7;
+	text-decoration: none;
+	font-family: "微软雅黑 Light";
+	font-size: 13px;
+	font-weight: bold;
+}
+
+/*html选择器*/
+a:hover {
+	color: #337ab7;
+	text-decoration: underline;
+	font-family: "微软雅黑 Light";
+	font-size: 13px;
+	font-weight: bold;
+}
+
+/*html选择器*/
+a:active {
+	color: #337ab7;
+	text-decoration: underline;
+	font-family: "微软雅黑 Light";
+	font-size: 13px;
+	font-weight: bold;
+}
+
+.login_show{
+	margin-top:10px;
+}
+
+.registerTable {
+	text-align:center;
+	border-style:groove;
+	border-style:inset;
+	border-style:outset;
+	border-width:medium;
+	box-shadow: 7px 7px 17px rgba(52, 56, 66, 0.5);
+	border-radius: 15px;
+	width: 1000px;
+	height: 65%;
+}
+.icon_image{
+	justify-content: space-around;
+	align-items: center;
+}
+
+.register_bar{
+	padding-top:15px;
+	padding-left: 30px;
+}
+.register_line{
+	margin-top:10px;
+}
+
+/*class类选择器*/
+
+
+.Register_Result{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	margin-top:25px;
+	margin-bottom:25px;
+
+}
+/*class类选择器*/
+.loginButton {
+	color: white;
+	width: 80%;
+	height: 35px;
+	font: bold 16px 微软雅黑 Light;
+	padding: 1px 20px 0px 20px;
+	border: #337ab7 1px solid;
+	cursor:pointer;
+	background: #337ab7;
+	border-radius: 12px;
+}
+
+.register_button{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 50%;
+	height: 100%;
+    margin-top:30px ;
+}
+
+.test_icon{
+	margin-left: 5px;
+}
